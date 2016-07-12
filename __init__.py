@@ -237,5 +237,13 @@ def get_year_by_name(year) :
 	
 	return jsonify({'result' : year_obj.dictify(), 'success' : True})
 
+@app.route('/api/run_tests')
+def run_tests():
+	try:
+		results = subprocess.getoutput("python3 tests.py")
+		return results
+	except Exception as e:
+		return str(e)
+
 if __name__ == "__main__":
 	app.run()
