@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>Year</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('static', filename='css/carousel.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Custom styles for this template -->
+  </head>
+<!-- NAVBAR
+================================================== -->
+  <body>
+
+        <nav class="navbar navbar-inverse navbar-static-top">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+              <ul class="nav navbar-nav">
+                <li><a href="/">HOME</a></li>
+                <li><a href="/about">ABOUT</a></li>
+                <li class="active"><a href="/years">YEARS</a></li>
+                <li><a href="/songs">SONGS</a></li>
+                <li><a href="/artists">ARTISTS</a></li>
+                <li><a href="/genres">GENRES</a></li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+
+    <div class="padding">
+          <h2 class="featurette-heading">{{ year.year }}<span class="text-muted"><br /><a href="/genres/{{ year.top_genre.name }}">{{ year.top_genre.name}}</a></span></h2>
+    
+<div class="container marketing">
+      <!-- Three columns of text below the carousel -->
+        <div class="col-lg-6">
+          <h3>Top Song</h3>
+          {% for a in year.top_songs %}
+          {% if loop.first %}
+            {% if a.rank == 1 %}
+            <img class="img-circle" src="{{ a.song.artist.image_url }}" alt="Generic placeholder image" width="140" height="140">
+            <h3><a href="/songs/{{ a.song.song_id }}">{{ a.song.song_name }}</a></h3>
+            <h2><a href="/artists/{{ a.song.artist_id }}">{{ a.song.artist_name }}</a></h2>
+            <iframe src="https://embed.spotify.com/?uri=spotify:track:{{ a.song.song_id }}" width="300" height="80" frameborder="0" allowtransparency="true"></iframe>
+            {% else %}
+            <img class="img-circle" src="{{ url_for('static', filename='no_img.png') }}" alt="Generic placeholder image" width="140" height="140">
+            <br>
+            <h4>We're sorry, the top song is not on Spotify.</h4>
+            {% endif %}
+          {% endif %}
+          {% endfor %}
+        </div><!-- /.col-lg-4 -->
+        <div class="col-lg-6">
+          <h3>Top Album</h3>
+          {% if artist %}
+          <img class="img-circle" src="{{ artist.image_url }}" alt="Generic placeholder image" width="140" height="140">
+          {% else %}
+            <img class="img-circle" src="{{ url_for('static', filename='no_img.png') }}" alt="Generic placeholder image" width="140" height="140">
+          {% endif %}
+          <h3>{{ year.top_album_name }} </h3>
+          <h2>{% if artist %}
+            <a href="/artists/{{ artist.artist_id }}">{{ artist.name }}</a>
+            {% endif %}
+          </h2>
+          {% if year.top_album_id %}
+          <iframe src="https://embed.spotify.com/?uri=spotify:album:{{ year.top_album_id }}" width="300" height="80" frameborder="0" allowtransparency="true"></iframe>
+          {% else %}
+          <br>
+          <h4>We're sorry, this album is not on Spotify.</h4>
+          {% endif %}
+
+        </div><!-- /.col-lg-4 -->
+        <div class='col-lg-12'>
+          <h3>Top Songs</h3>
+          <div class="table-responsive">
+          <table id="year_songs" class="display table" width="100%">
+          <thead>
+            <tr>
+            <th>Rank</th>
+            <th>Song</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in year.top_songs %}
+            <tr>
+            <td>{{ a.rank }}</td>
+            <td><a href="/songs/{{ a.song_id }}">{{ a.song.song_name}}</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+        </div>
+    </div>  
+  </div>
+
+      <!-- FOOTER -->
+      <footer>
+       <a href="#">Back to top</a></p>
+        <p>&copy; 2015 Company, Inc. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+      </footer>
+
+    </div><!-- /.container -->
+  </div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="static/js/bootstrap.min.js"></script>
+    <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+    <script src="../../assets/js/vendor/holder.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" 
+    href="http://cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css"></style>
+    <link rel="stylesheet" 
+    href="http://cdn.datatables.net/rowreorder/1.1.2/css/rowReorder.dataTables.min.css"></style>
+    <link rel="stylesheet" 
+    href="https://cdn.datatables.net/responsive/2.1.0/css/responsive.dataTables.min.css"></style>
+    <script type="text/javascript" 
+    src="http://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" 
+    src="https://cdn.datatables.net/rowreorder/1.1.2/js/dataTables.rowReorder.min.js"></script>
+    <script type="text/javascript" 
+    src="https://cdn.datatables.net/responsive/2.1.0/js/dataTables.responsive.min.js"></script>
+    <script type="text/javascript" 
+    src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+    <script>
+    $(document).ready(function(){
+        $('#year_songs').dataTable();
+    });
+    </script> 
+
+
+
+
+  </body>
+</html>
