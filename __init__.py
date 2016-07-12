@@ -2,6 +2,7 @@ from flask import Flask, render_template, jsonify, abort
 from models import *
 from sqlalchemy.orm import sessionmaker
 import ast
+import subprocess
 
 def artists_and_songs(session):
 	json = open('/var/www/FlaskApp/FlaskApp/JSON/songs.txt', 'r').read()
