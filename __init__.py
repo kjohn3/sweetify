@@ -241,7 +241,7 @@ def get_year_by_name(year) :
 @app.route('/api/run_tests')
 def run_tests():
 	try:
-		results = subprocess.getoutput("python3 tests.py")
+		results = subprocess.check_output("python3 tests.py", shell=True)
 		return results
 	except Exception as e:
 		return str(e)
