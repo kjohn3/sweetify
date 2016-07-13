@@ -215,7 +215,7 @@ def get_genres() :
 @app.route('/api/genres/<string:name>', methods=['GET'])
 def get_genre_by_name(name) :
 	try :
-		genre = session.query(Genre).filter_by(name=name).first()
+		genre = unicode(session.query(Genre).filter_by(name=name).first(), 'utf-8')
 	
 #	if not genre :
 #		abort(400)
@@ -241,11 +241,11 @@ def get_year_by_name(year) :
 	
 	return jsonify({'result' : year_obj.dictify(), 'success' : True})
 
-@app.route('/api/run_tests')
+@app.route('/api/run_tests', methods=['GET'])
 def run_tests():
 	try:
-		results = subprocess.check_output("python3 tests.py", shell=True)
-		return results
+		result = subprocess.check_output("python3 /var/www/FlaskApp/FlaskApp/tests.py", stderr=subprocess.STDOUT, shell=True)
+		return result
 	except Exception as e:
 		return str(e)
 
