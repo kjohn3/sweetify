@@ -180,7 +180,7 @@ class Song(BASE):
         song_dict = dict()
         song_dict['song_id'] = str(self.song_id)
         song_dict['song_name'] = str(self.song_name)
-        song_dict['artist_name'] = str(self.artist_name)
+        song_dict['artist_name'] = self.artist_name
         song_dict['artist_id'] = str(self.artist_id)
         song_dict['album_name'] = str(self.album_name)
         song_dict['explicit'] = self.explicit
@@ -222,10 +222,10 @@ class Genre(BASE):
 
     def dictify(self):
         genre_dict = dict()
-        genre_dict['name'] = str(self.name)
-        genre_dict['description'] = str(self.description)
+        genre_dict['name'] = (self.name)
+        genre_dict['description'] = self.description
         genre_dict['years_on_top'] = [year.year for year in self.years_on_top]
-        genre_dict['artists'] = [str(artist.name) for artist in self.artists]
+        genre_dict['artists'] = [(artist.name) for artist in self.artists]
         genre_dict['related_genres'] = [
             str(genre.name) for genre in self.related_genres]
         return genre_dict

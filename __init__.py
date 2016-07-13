@@ -215,7 +215,7 @@ def get_genres() :
 @app.route('/api/genres/<string:name>', methods=['GET'])
 def get_genre_by_name(name) :
 	try :
-		genre = unicode(session.query(Genre).filter_by(name=name).first(), 'utf-8')
+		genre = session.query(Genre).filter_by(name=name).first()
 	
 #	if not genre :
 #		abort(400)
@@ -250,4 +250,4 @@ def run_tests():
 		return str(e)
 
 if __name__ == "__main__":
-	app.run()
+	app.run(i)
