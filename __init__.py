@@ -214,13 +214,16 @@ def get_genres() :
 	
 @app.route('/api/genres/<string:name>', methods=['GET'])
 def get_genre_by_name(name) :
-	genre = session.query(Genre).filter_by(name=name).first()
+	try :
+		genre = session.query(Genre).filter_by(name=name).first()
 	
-	if not genre :
-		abort(400)
+#	if not genre :
+#		abort(400)
 	
-	return jsonify({'result' : genre.dictify(), 'success' : True})
-	
+		return jsonify({'result' : genre.dictify(), 'success' : True})
+	except Exception as e:
+		return str(e)	
+
 @app.route('/api/years', methods=['GET'])
 def get_years() :
 	years = session.query(Year).all()
@@ -238,13 +241,13 @@ def get_year_by_name(year) :
 	
 	return jsonify({'result' : year_obj.dictify(), 'success' : True})
 
-@app.route('/api/run_tests')
-def run_tests():
-	try:
-		results = subprocess.getoutput("python3 tests.py")
-		return results
-	except Exception as e:
-		return str(e)
+@app.route('/api/run_tests', methods=['GET'])
+def api_run_tests():
+    try:
+        test_results = subprocess.getoutput("python3 tests.py")
+        return test_results
+    except Exception as e:
+        return str(e)
 
 if __name__ == "__main__":
 	app.run()
