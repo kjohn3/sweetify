@@ -3,6 +3,7 @@ from models import *
 from sqlalchemy.orm import sessionmaker
 import ast
 import subprocess
+import requests
 
 def artists_and_songs(session):
 	json = open('/var/www/FlaskApp/FlaskApp/JSON/songs.txt', 'r').read()
