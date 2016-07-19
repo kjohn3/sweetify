@@ -169,6 +169,9 @@ def year(year):
 def genre(name):
 	g = session.query(Genre).filter_by(name = name).first()
 	return render_template('genre1.html', genre=g)
+@app.route('/visualization')
+def visualization():
+	return render_template("visualization.html")	
 
 @app.route('/api/songs', methods=['GET'])
 def get_songs() :
@@ -247,7 +250,7 @@ def run_tests():
 		result = subprocess.check_output("python3 /var/www/FlaskApp/FlaskApp/tests.py", stderr=subprocess.STDOUT, shell=True)
 		return result
 	except Exception as e:
-		return str(e)
+		return str(e)		
 
 if __name__ == "__main__":
 	app.run()
