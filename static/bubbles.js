@@ -66,7 +66,7 @@ function myFunction(authors) {
       {
         name: "central-click",
         options: {
-          text: "(See more detail)",
+          text: "(See list of books)",
           style: {
             "font-size": "12px",
             "font-style": "italic",
@@ -77,7 +77,7 @@ function myFunction(authors) {
           },
           attr: {dy: "65px"},
           centralClick: function() {
-            alert("Here is more details!!");
+            alert("assfdffgg!!");
           }
         }
       },
