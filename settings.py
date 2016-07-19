@@ -3,6 +3,6 @@ DATABASE = {
     'host': 'localhost',
     'port': '5432',
     'username': 'postgres',
-    'password': 'sweetify',
+    'password': 'password',
     'database': 'sweetify'
 }

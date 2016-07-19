@@ -23,36 +23,30 @@ def artists_and_songs(session):
 	try:
 		if not session.query(Artist).first():
 			for a in artists:
-				artist = Artist(name=a['name'], num_followers=a['num_followers'], 
-				artist_id=a['artist_id'], image_url=a['image_url'], 
+				artist = Artist(name=a['name'], num_followers=a['num_followers'],
+				artist_id=a['artist_id'], image_url=a['image_url'],
 				popularity=a['popularity'])
 				session.add(artist)
 				session.commit()
 
-		# Now, make an association between the artist and their genres.
-		# artist_genres = a['genres']
-		# for a_genre in artist_genres:
-		# 	genre_to_add = session.query(Genre).filter_by(name=a_genre).first()
-		# 	artist.genres.append(genre_to_add)
-
-		for s in songs:  
+		for s in songs:
 			test_song = session.query(Song).filter_by(song_id=s['song_id']).first()
 			if not test_song:
-				song = Song(song_id = s['song_id'], song_name = s['song_name'],
-					artist_id = s['artist_id'], artist_name = s['artist_name'], 
-					album_name = s['album_name'], explicit = s['explicit'], 
-					popularity = s['popularity'])
+				song = Song(song_id=s['song_id'], song_name=s['song_name'],
+					artist_id=s['artist_id'], artist_name=s['artist_name'],
+					album_name=s['album_name'], explicit=s['explicit'],
+					popularity=s['popularity'])
 				session.add(song)
 				session.commit()
 
 		# Make the charted_songs and artist relationship
 		for a in session.query(Artist).all():
 			if not a.charted_songs:
-				for s in session.query(Song).filter_by(artist_id = a.artist_id).all():
+				for s in session.query(Song).filter_by(artist_id=a.artist_id).all():
 					a.charted_songs.append(s)
 
 				# s.artist = a
-		
+
 		if not session.query(Genre).first():
 			for g in genres:
 				genre = Genre(name=g['name'], description=g['summary'])
@@ -62,13 +56,15 @@ def artists_and_songs(session):
 		if not session.query(Year).first():
 			for y in years:
 				if not session.query(Artist).filter_by(artist_id=y['top_album_artist_id']).first():
-					year = Year(year=y['year'], top_album_name=y['top_album_name'], 
+					year = Year(
+						year=str(y['year']).strip(), top_album_name=y['top_album_name'],
 						top_album_id=y['top_album_id'],
 						top_genre_name=y['top_genre_name'])
 				else:
-					year = Year(year=y['year'], top_album_name=y['top_album_name'], 
+					year = Year(
+						year=str(y['year']).strip(), top_album_name=y['top_album_name'],
 						top_album_id=y['top_album_id'],
-						top_genre_name=y['top_genre_name'], 
+						top_genre_name=y['top_genre_name'],
 						top_album_artist_id=y['top_album_artist_id'])
 				session.add(year)
 				session.commit()
@@ -102,22 +98,22 @@ def artists_and_songs(session):
 		# Year song association
 		for ys in year_song:
 			# Get the year
-			year = session.query(Year).filter_by(year = ys['year']).first()
+			year = session.query(Year).filter_by(year=str(ys['year']).strip()).first()
 			if not year.top_songs:
 				# Loop through the list of songs
 				for s in ys['song_list']:
 					if s['song_id']:
-						song = session.query(Song).filter_by(song_id = s['song_id']).first()
+						song = session.query(Song).filter_by(song_id=s['song_id']).first()
 						# Do we have this song in the DB?
 						if song:
-							assoc = YearsSongsAssociation(year_num = year.year, 
-								song_id = s['song_id'], rank= s['rank'])
+							assoc = YearsSongsAssociation(year_num=year.year,
+								song_id=s['song_id'], rank=s['rank'])
 							assoc.song = song
 							assoc.year = year
 							year.top_songs.append(assoc)
 							session.add(assoc)
 							session.commit()
-							#song.years_charted.append(assoc) # Do we need this?
+							# song.years_charted.append(assoc) # Do we need this?
 
 	except:
 		session.rollback()
@@ -171,8 +167,79 @@ def genre(name):
 	return render_template('genre1.html', genre=g)
 @app.route('/visualization')
 def visualization():
-	return render_template("visualization.html")	
+	response = requests.get('http://sweetify.me/api/artists')
+	authors = response.json()['result']
+	character_counts = dict()
+	for author in authors :
+		c = author.upper()[0]
+		if c in character_counts :
+			character_counts[c] += 1
+		else :
+			character_counts[c] = 1
 
+	character_counts = [{'text':key,'count':str(character_counts[key])} for key in character_counts]
+	
+	return render_template('visualization.html', character_counts=character_counts)
+
+@app.route('/search/<term>')
+def search(term):
+
+	# Parse it
+	term = term.lower().replace("%20", " ")
+	terms = term.split()
+
+	queryAndArtist = session.query(Artist, func.ts_headline('english', Artist.name, func.plainto_tsquery(term)).label('h_name')) \
+					.filter(and_(Artist.tsvector_col.match(s) for s in terms)).all()
+
+	queryOrArtist = session.query(Artist, func.ts_headline('english', Artist.name, func.plainto_tsquery(term)).label('h_name')) \
+					.filter(or_(Artist.tsvector_col.match(s) for s in terms)).all()
+
+	queryAndSong = session.query(Song,
+								 func.ts_headline('english', Song.song_name,
+								                  func.plainto_tsquery(term)).label('h_song_name'), \
+								 func.ts_headline('english', Song.artist_name, \
+								                  func.plainto_tsquery(term)).label('h_artist_name'), \
+								 func.ts_headline('english', Song.album_name, func.plainto_tsquery(term)).label('h_album_name')) \
+								 .filter(and_(Song.tsvector_col.match(s) for s in terms)).all()
+
+
+	queryOrSong = session.query(Song, \
+								func.ts_headline('english', Song.song_name, func.plainto_tsquery(term)).label('h_song_name'), \
+								func.ts_headline('english', Song.artist_name, \
+								                  func.plainto_tsquery(term)).label('h_artist_name'), \
+								func.ts_headline('english', Song.album_name, func.plainto_tsquery(term)).label('h_album_name')) \
+								.filter(or_(Song.tsvector_col.match(s) for s in terms)).all()
+
+	queryAndYear = session.query(Year, \
+								 func.ts_headline('english', Year.year, func.plainto_tsquery(term)).label('h_year'), \
+								 func.ts_headline('english', Year.top_genre_name, func.plainto_tsquery(term)).label('h_top_genre_name'), \
+								 func.ts_headline('english', Year.top_album_name, func.plainto_tsquery(term)).label('h_top_album_name')) \
+								 .filter(and_(Year.tsvector_col.match(s) for s in terms)).all()
+
+	queryOrYear = session.query(Year, \
+								 func.ts_headline('english', Year.year, func.plainto_tsquery(term)).label('h_year'), \
+								 func.ts_headline('english', Year.top_genre_name, func.plainto_tsquery(term)).label('h_top_genre_name'), \
+								 func.ts_headline('english', Year.top_album_name, func.plainto_tsquery(term)).label('h_top_album_name')) \
+								 .filter(or_(Year.tsvector_col.match(s) for s in terms)).all()
+
+	queryAndGenre = session.query(Genre, \
+								  func.ts_headline('english', Genre.name, func.plainto_tsquery(term)).label('h_name'), \
+								  func.ts_headline('english', Genre.description, func.plainto_tsquery(term)).label('h_description')) \
+								  .filter(and_(Genre.tsvector_col.match(s) for s in terms)).all()
+
+	queryOrGenre = session.query(Genre, \
+								 func.ts_headline('english', Genre.name, func.plainto_tsquery(term)).label('h_name'), \
+								 func.ts_headline('english', Genre.description, func.plainto_tsquery(term)).label('h_description')) \
+							     .filter(or_(Genre.tsvector_col.match(s) for s in terms)).all()
+
+	return render_template('search.html', andArtist = queryAndArtist, orArtist = queryOrArtist,
+		andSong = queryAndSong, orSong = queryOrSong,
+		andYear = queryAndYear, orYear = queryOrYear,
+		andGenre = queryAndGenre, orGenre = queryOrGenre, term=term)
+
+
+
+# API CALLS #
 @app.route('/api/songs', methods=['GET'])
 def get_songs() :
 	songs = session.query(Song).all()
@@ -217,12 +284,13 @@ def get_genres() :
 	
 @app.route('/api/genres/<string:name>', methods=['GET'])
 def get_genre_by_name(name) :
-	try :
-		genre = session.query(Genre).filter_by(name=name).first()
-		return jsonify({'result' : genre.dictify(), 'success' : True})
-	except Exception as e:
-		return str(e)	
-
+	genre = session.query(Genre).filter_by(name=name).first()
+	
+	if not genre :
+		abort(400)
+	
+	return jsonify({'result' : genre.dictify(), 'success' : True})
+	
 @app.route('/api/years', methods=['GET'])
 def get_years() :
 	years = session.query(Year).all()
@@ -243,10 +311,10 @@ def get_year_by_name(year) :
 @app.route('/api/run_tests', methods=['GET'])
 def run_tests():
 	try:
-		result = subprocess.check_output("python3 /var/www/FlaskApp/FlaskApp/tests.py", stderr=subprocess.STDOUT, shell=True)
+		result = subprocess.check_output("python3 tests.py", stderr=subprocess.STDOUT, shell=True)
 		return result
 	except Exception as e:
-		return str(e)		
+		return str(e)
 
 if __name__ == "__main__":
-	app.run(i)
+	app.run()
