@@ -1,29 +1,4 @@
 function myFunction(authors) {
-  // var xmlhttp = new XMLHttpRequest();
-  // var url = "http://sweetify.me/api/artists";
-  // var character_counts = []
-  // xmlhttp.onreadystatechange = function() {
-  //    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-  //        window.alert(xmlhttp.responseText);
-  //        var myArr = JSON.parse(xmlhttp.responseText.result);
-  //       character_counts = dict()
-  //       for author in authors :
-  //         c = author.upper()[0]
-  //         if c in character_counts :
-  //           character_counts[c] += 1
-  //         else :
-  //           character_counts[c] = 1        
-  //         character_counts = [{'text':key,'count':character_counts[key]} for key in character_counts]     
-  //         var dict;
-  //        for (var i = 0; i < myArr.length; i++)
-  //        {
-
-  //        }
-  //    }
-  // };
-  // xmlhttp.open("GET", url, true);
-  // xmlhttp.send();
-  // var character_counts = {{ character_counts|tojson }}
 
   var bubbleChart = new d3.svg.BubbleChart({
     supportResponsive: true,
@@ -64,7 +39,7 @@ function myFunction(authors) {
     },
     plugins: [
       {
-        name: "centralClick",
+        name: "central-click",
         options: {
           text: "(See list of books)",
           style: {
