@@ -1,4 +1,4 @@
-function myFunction(artists) {
+function myFunction(authors) {
   // var xmlhttp = new XMLHttpRequest();
   // var url = "http://sweetify.me/api/artists";
   // var character_counts = []
@@ -38,7 +38,7 @@ function myFunction(artists) {
     //intersectInc: use @default
     //circleColor: use @default
     data: {
-         items: artists, 
+         items: authors, 
       // items: [
       //   {text: "Java", count: "236"},
       //   {text: ".Net", count: "382"},
