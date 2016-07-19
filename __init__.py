@@ -175,7 +175,7 @@ def visualization():
 		publisherID = publisher[0]
 		publishername = publisher[1]
 		response = requests.get('http://writerblocks.me/api/publishers?id=' + publisherID).json()
-		book_count += dict('text': publishername, 'count': len(response[published_books]))
+		book_count += [{'text': publishername, 'count': len(response[published_books])}]
 	
 	return render_template('visualization.html', book_count=book_count)
 
