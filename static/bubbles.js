@@ -64,7 +64,7 @@ function myFunction(authors) {
     },
     plugins: [
       {
-        name: "central-click",
+        name: "centralClick",
         options: {
           text: "(See list of books)",
           style: {
