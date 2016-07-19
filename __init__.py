@@ -218,11 +218,7 @@ def get_genres() :
 @app.route('/api/genres/<string:name>', methods=['GET'])
 def get_genre_by_name(name) :
 	try :
-		genre = unicode(session.query(Genre).filter_by(name=name).first(), 'utf-8')
-	
-#	if not genre :
-#		abort(400)
-	
+		genre = session.query(Genre).filter_by(name=name).first()
 		return jsonify({'result' : genre.dictify(), 'success' : True})
 	except Exception as e:
 		return str(e)	
@@ -253,4 +249,4 @@ def run_tests():
 		return str(e)		
 
 if __name__ == "__main__":
-	app.run()
+	app.run(i)
