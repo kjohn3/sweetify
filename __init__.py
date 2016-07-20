@@ -172,75 +172,99 @@ def genre(name):
 
 @app.route('/api/songs', methods=['GET'])
 def get_songs() :
-	songs = session.query(Song).all()
-	song_names = list()
-	for song in songs:
-		song_names += [song.song_name]
-	return jsonify({'result' : song_names, 'success' : True})
+	try :
+		songs = session.query(Song).all()
+		song_names = list()
+		for song in songs:
+			song_names += [song.song_name]
+		return jsonify({'result' : song_names, 'success' : True})
+	except Exception as e :
+		return jsonify({'result' : str(e), 'success' : False})
 	
 @app.route('/api/songs/<string:name>', methods=['GET'])
 def get_song_by_name(name) :
-	song = session.query(Song).filter_by(song_name=name).first()
-	
-	if not song :
-		abort(400)
-	
-	return jsonify({'result' : song.dictify(), 'success' : True})
+	try :
+		song = session.query(Song).filter_by(song_name=name).first()
+		
+		if not song :
+			return jsonify({'result' : 'We were unable to find that search query.', 'success' : False})
+		
+		return jsonify({'result' : song.dictify(), 'success' : True})
+	except Exception as e :
+		return jsonify({'result' : str(e), 'success' : False})
 	
 @app.route('/api/artists', methods=['GET'])
 def get_artists() :
-	artists = session.query(Artist).all()
-	artist_names = list()
-	for artist in artists:
-		artist_names += [artist.name]
-	return jsonify({'result' : artist_names, 'success' : True})
+	try :
+		artists = session.query(Artist).all()
+		artist_names = list()
+		for artist in artists:
+			artist_names += [artist.name]
+		return jsonify({'result' : artist_names, 'success' : True})
+	except Exception as e :
+		return jsonify({'result' : str(e), 'success' : False})
 	
 @app.route('/api/artists/<string:name>', methods=['GET'])
 def get_artist_by_name(name) :
-	artist = session.query(Artist).filter_by(name=name).first()
-	
-	if not artist :
-		abort(400)
-	
-	return jsonify({'result' : artist.dictify(), 'success' : True})
+	try :
+		artist = session.query(Artist).filter_by(name=name).first()
+		
+		if not artist :
+			return jsonify({'result' : 'We were unable to find that search query.', 'success' : False})
+		
+		return jsonify({'result' : artist.dictify(), 'success' : True})
+	except Exception as e :
+		return jsonify({'result' : str(e), 'success' : False})
 	
 @app.route('/api/genres', methods=['GET'])
 def get_genres() :
-	genres = session.query(Genre).all()
-	genre_names = list()
-	for genre in genres:
-		genre_names += [genre.name]
-	return jsonify({'result' : genre_names, 'success' : True})
+	try :
+		genres = session.query(Genre).all()
+		genre_names = list()
+		for genre in genres:
+			genre_names += [genre.name]
+		return jsonify({'result' : genre_names, 'success' : True})
+	except Exception as e :
+		return jsonify({'result' : str(e), 'success' : False})
 	
 @app.route('/api/genres/<string:name>', methods=['GET'])
 def get_genre_by_name(name) :
-	genre = session.query(Genre).filter_by(name=name).first()
-	
-	if not genre :
-		abort(400)
-	
-	return jsonify({'result' : genre.dictify(), 'success' : True})
+	try :
+		genre = session.query(Genre).filter_by(name=name).first()
+		
+		if not genre :
+			return jsonify({'result' : 'We were unable to find that search query.', 'success' : False})
+		
+		return jsonify({'result' : genre.dictify(), 'success' : True})
+	except Exception as e :
+		return jsonify({'result' : str(e), 'success' : False})
 	
 @app.route('/api/years', methods=['GET'])
 def get_years() :
-	years = session.query(Year).all()
-	year_names = list()
-	for year in years:
-		year_names += [year.year]
-	return jsonify({'result' : year_names, 'success' : True})
+	try :
+		years = session.query(Year).all()
+		year_names = list()
+		for year in years:
+			year_names += [year.year]
+		return jsonify({'result' : year_names, 'success' : True})
+	except Exception as e :
+		return jsonify({'result' : str(e), 'success' : False})
 	
 @app.route('/api/years/<int:year>', methods=['GET'])
 def get_year_by_name(year) :
-	year_obj = session.query(Year).filter_by(year=year).first()
-	
-	if not year_obj :
-		abort(400)
-	
-	return jsonify({'result' : year_obj.dictify(), 'success' : True})
+	try :
+		year_obj = session.query(Year).filter_by(year=year).first()
+		
+		if not year_obj :
+			return jsonify({'result' : 'We were unable to find that search query.', 'success' : False})
+		
+		return jsonify({'result' : year_obj.dictify(), 'success' : True})
+	except Exception as e :
+		return jsonify({'result' : str(e), 'success' : False})
 
 @app.route('/api/run_tests')
 def run_tests():
-	try:
+	try :
 		results = subprocess.getoutput("python3 tests.py")
 		return results
 	except Exception as e:
